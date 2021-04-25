@@ -76,3 +76,6 @@ typings/
 .fusebox/
 public/.DS_Store
 .DS_Store
+
+.firebase
+dist
