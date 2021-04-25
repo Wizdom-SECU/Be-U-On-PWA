@@ -8,11 +8,14 @@
   },
   "dependencies": {
     "bootstrap": "^5.0.0-beta3",
-    "vue": "^3.0.5"
+    "bootstrap-icons": "^1.4.1",
+    "vue": "^3.0.5",
+    "vue-router": "^4.0.6"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^1.2.1",
     "@vue/compiler-sfc": "^3.0.5",
+    "sass": "^1.32.11",
     "vite": "^2.1.5"
   }
 }
