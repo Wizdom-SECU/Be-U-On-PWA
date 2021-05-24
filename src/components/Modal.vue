@@ -48,46 +48,45 @@ export default {
           </header>
 
           <section class="modal-body" id="modalDescription">
-            <slot name="">
               <form class="row gy-2 gx-3 align-items-center">
                 <div class="col-12">
-                  <label for="inputCourseName" class="form-label"
-                    >Course Name</label
+                  <label for="courseTitle" class="form-label"
+                    >Course Title</label
                   >
                   <input
                     type="text"
                     class="form-control"
-                    aria-label="course name"
+                    aria-label="courseTitle"
                   />
                 </div>
                 <div class="col-12">
-                  <label for="inputCourseDesc" class="form-label"
+                  <label for="courseDesc" class="form-label"
                     >Course Description</label
                   >
                   <input
                     type="text"
                     class="form-control"
-                    aria-label="course desc"
+                    aria-label="courseDesc"
                   />
                 </div>
                 <div class="col-12">
-                  <label for="inputTeachBy" class="form-label">Teach by</label>
+                  <label for="teachBy" class="form-label">Teach by</label>
                   <input
                     type="text"
                     class="form-control"
-                    aria-label="teach by"
+                    aria-label="teachBy"
                   />
                 </div>
                 <div class="col-auto">
-                  <label for="inputTime" class="form-label">Time</label>
-                  <input type="text" class="form-control" id="inputTime" />
+                  <label for="time" class="form-label">Time</label>
+                  <input type="date" class="form-control" />
                 </div>
                 <div class="col-auto">
-                  <label for="inputPrice" class="form-label">Price</label>
-                  <input type="text" class="form-control" id="inputPrice" />
+                  <label for="price" class="form-label">Price</label>
+                  <input type="text" class="form-control" />
                 </div>
                 <div class="col-12">
-                  <label for="inputLocation" class="form-label">Location</label>
+                  <label for="location" class="form-label">Location</label>
                   <input
                     type="text"
                     class="form-control"
@@ -121,12 +120,11 @@ export default {
                   </label>
                 </div>
               </form>
-            </slot>
           </section>
 
           <footer class="modal-footer">
             <button
-              type="button"
+              type="submit"
               class="btn btn-green btn-sm"
               @click="close"
               aria-label="Close modal"
