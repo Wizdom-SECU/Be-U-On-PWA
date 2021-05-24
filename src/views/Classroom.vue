@@ -24,24 +24,26 @@
         <!-- <a class="p-2 link-secondary" href="#">Arts</a> -->
       </nav>
     </div>
-    <div class="row gx-3 gy-3">
-      <div class="col-sm">
-        <div class="card">
-          <img src="../assets/3808949.jpg" class="card-img-top" />
-          <div class="card-body">
-            <h5 class="card-title">Chemistry</h5>
-            <p class="card-text">Tutor Prakit</p>
-            <a
-              class="btn btn-success"
-              data-bs-toggle="offcanvas"
-              href="#offcanvasBottom"
-              aria-controls="offcanvasBottom"
-              >Enroll</a
-            >
+      <div class="row gx-3 gy-3">
+        <div class="col-sm" v-for="item in courseList" :key="item.courseTitle">
+          <div class="card">
+            <img src="../assets/3808949.jpg" class="card-img-top" />
+            <div class="card-body">
+              <h5 class="card-title">{{ item.courseTitle }}</h5>
+              <p class="card-text">{{ item.teachBy }}</p>
+              <button
+                class="btn btn-success"
+                data-bs-toggle="offcanvas"
+                aria-controls="offcanvasBottom"
+                id="enrollBtn"
+                v-on:click="insertToDatabase"
+              >
+                Enroll
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="col-sm">
+        <!-- <div class="col-sm">
         <div class="card">
           <img src="../assets/3808949.jpg" class="card-img-top" />
           <div class="card-body">
@@ -50,27 +52,116 @@
             <a class="btn btn-success" data-bs-toggle="offcanvas">Enroll</a>
           </div>
         </div>
+      </div> -->
       </div>
-    </div>
     <button
       class="bi bi-plus-circle-fill btn btn-outline-light"
-      type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom"
+      type="button"
+      data-bs-toggle="offcanvas"
+      data-bs-target="#offcanvasBottom"
+      aria-controls="offcanvasBottom"
     ></button>
 
-    <div class="offcanvas offcanvas-bottom" :class="showMenu ? 'show' : ''" tabindex="-1" id="offcanvasBottom" :style="{ visibility: showMenu ? 'visible' : 'hidden' }" aria-labelledby="offcanvasBottomLabel">
-  <div class="offcanvas-header">
-    <h5 class="offcanvas-title" id="offcanvasBottomLabel">Offcanvas bottom</h5>
-    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-  </div>
-  <div class="offcanvas-body small">
-    ...
-  </div>
-</div>
+    <div
+      class="offcanvas offcanvas-bottom"
+      :class="showMenu ? 'show' : ''"
+      tabindex="-1"
+      id="offcanvasBottom"
+      :style="{ visibility: showMenu ? 'visible' : 'hidden' }"
+      aria-labelledby="offcanvasBottomLabel"
+    >
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasBottomLabel">
+          Offcanvas bottom
+        </h5>
+        <button
+          type="button"
+          class="btn-close text-reset"
+          data-bs-dismiss="offcanvas"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="offcanvas-body small">...</div>
+    </div>
   </div>
 </template>
 
 <script>
-export default {};
+import moment from "moment";
+import courseService from "../services/CourseService";
+
+export default {
+  name: "Classroom",
+  created() {
+    this.getAllCourse();
+  },
+  data() {
+    return {
+      courseObject: {
+        courseTitle: "",
+        courseDesc: "",
+        teachBy: "",
+        price: 0,
+        location: "",
+        time: moment(new Date()).format("DD/MM/YYYY hh:mm"),
+        courseType: "onsite",
+        paymentStatus: "waiting payment",
+        studentList: [],
+        cost: 500,
+        zoomLink: "",
+      },
+      studentId: "test1234",
+      maxStudent: 5,
+      courseList: [],
+    };
+  },
+  methods: {
+    onDataChange(items) {
+      let list = [];
+
+      items.forEach((item) => {
+        let data = item.val();
+        list.push({
+          courseTitle: data.courseTitle,
+          courseDesc: data.courseDesc,
+          teachBy: data.teachBy,
+          price: data.price,
+          location: data.location,
+          time: data.time,
+          courseType: data.courseType,
+          paymentStatus: data.paymentStatus,
+          studentList: data.studentList,
+          cost: data.cost,
+          zoomLink: data.zoomLink,
+        });
+      });
+
+      this.courseList = list;
+      console.log(this.courseList);
+    },
+    enrollCourse() {
+      if (this.courseObject.studentList.length > this.maxStudent) {
+        document.getElementById("enrollBtn").setAttribute("disabled", true);
+      }
+      this.courseObject.studentList.push(this.studentId);
+      console.log(this.courseObject.studentList);
+    },
+    insertToDatabase() {
+      this.enrollCourse();
+      courseService
+        .create(this.courseObject)
+        .then(() => {
+          console.log("Created new item successfully!");
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    },
+    getAllCourse() {
+      courseService.getAll().on("value", this.onDataChange);
+    },
+  },
+};
 </script>
 <style>
 .bi {
