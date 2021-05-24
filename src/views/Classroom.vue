@@ -3,6 +3,14 @@
     <h4 class="d-flex justify-content-between align-items-center mb-3">
       <span class="text-primary">Course List</span>
     </h4>
+    <form class="d-flex">
+      <input
+        class="form-control me-2"
+        type="search"
+        placeholder="Search"
+        aria-label="Search"
+      />
+    </form>
     <div>Category:</div>
     <div class="nav-scroller py-1 mb-2">
       <nav class="nav d-flex justify-content-between">
@@ -32,7 +40,7 @@
             <h5 class="card-title">Chemistry</h5>
             <p class="card-text">Tutor Prakit</p>
             <a
-              class="btn btn-success"
+              class="btn btn-lg btn-primary"
               data-bs-toggle="offcanvas"
               href="#offcanvasBottom"
               aria-controls="offcanvasBottom"
@@ -47,37 +55,62 @@
           <div class="card-body">
             <h5 class="card-title">Science</h5>
             <p class="card-text">Tutor Annop</p>
-            <a class="btn btn-success" data-bs-toggle="offcanvas">Enroll</a>
+            <a class="btn btn-lg btn-primary" data-bs-toggle="offcanvas"
+              >Enroll</a
+            >
           </div>
         </div>
       </div>
     </div>
-    <button
-      class="bi bi-plus-circle-fill btn btn-outline-light"
-      type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom"
-    ></button>
 
-    <div class="offcanvas offcanvas-bottom" :class="showMenu ? 'show' : ''" tabindex="-1" id="offcanvasBottom" :style="{ visibility: showMenu ? 'visible' : 'hidden' }" aria-labelledby="offcanvasBottomLabel">
-  <div class="offcanvas-header">
-    <h5 class="offcanvas-title" id="offcanvasBottomLabel">Offcanvas bottom</h5>
-    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-  </div>
-  <div class="offcanvas-body small">
-    ...
-  </div>
-</div>
+    <div id="app">
+      <button
+        class="bi bi-plus-circle-fill btn btn-outline-light"
+        type="button"
+        @click="showModal"
+      ></button>
+
+      <Modal v-show="isModalVisible" @close="closeModal">
+        <template v-slot:header> This is a new modal header. </template>
+
+        <template v-slot:body> This is a new modal body. </template>
+
+        <template v-slot:footer> This is a new modal footer. </template>
+      </Modal>
+    </div>
   </div>
 </template>
 
 <script>
-export default {};
+import Modal from "../components/Modal.vue";
+
+export default {
+  name: "App",
+  components: {
+    Modal,
+  },
+  data() {
+    return {
+      isModalVisible: false,
+    };
+  },
+  methods: {
+    showModal() {
+      this.isModalVisible = true;
+    },
+    closeModal() {
+      this.isModalVisible = false;
+    },
+  },
+};
 </script>
+
 <style>
-.bi {
+button.bi-plus-circle-fill {
   color: rgba(255, 99, 120, 1);
   size: 500px;
-  margin-left: 240px;
-  margin-right: 30px;
+  margin-left: 200px;
+  margin-right: 50px;
   font-size: 50px;
 }
 
