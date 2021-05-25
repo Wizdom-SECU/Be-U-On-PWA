@@ -3,6 +3,14 @@
     <h4 class="d-flex justify-content-between align-items-center mb-3">
       <span class="text-primary">Course List</span>
     </h4>
+    <form class="d-flex">
+      <input
+        class="form-control me-2"
+        type="search"
+        placeholder="Search"
+        aria-label="Search"
+      />
+    </form>
     <div>Category:</div>
     <div class="nav-scroller py-1 mb-2">
       <nav class="nav d-flex justify-content-between">
@@ -49,11 +57,29 @@
           <div class="card-body">
             <h5 class="card-title">Science</h5>
             <p class="card-text">Tutor Annop</p>
-            <a class="btn btn-success" data-bs-toggle="offcanvas">Enroll</a>
+            <a class="btn btn-lg btn-primary" data-bs-toggle="offcanvas"
+              >Enroll</a
+            >
           </div>
         </div>
       </div> -->
       </div>
+    </div>
+
+    <div id="app">
+      <button
+        class="bi bi-plus-circle-fill btn btn-outline-light"
+        type="button"
+        @click="showModal"
+      ></button>
+
+      <Modal v-show="isModalVisible" @close="closeModal">
+        <template v-slot:header> This is a new modal header. </template>
+
+        <template v-slot:body> This is a new modal body. </template>
+
+        <template v-slot:footer> This is a new modal footer. </template>
+      </Modal>
     <button
       class="bi bi-plus-circle-fill btn btn-outline-light"
       type="button"
@@ -89,6 +115,7 @@
 <script>
 import moment from "moment";
 import courseService from "../services/CourseService";
+import Modal from "../components/Modal.vue";
 
 export default {
   name: "Classroom",
@@ -113,6 +140,7 @@ export default {
       studentId: "test1234",
       maxStudent: 5,
       courseList: [],
+	  isModalVisible: false,
     };
   },
   methods: {
@@ -160,15 +188,21 @@ export default {
     getAllCourse() {
       courseService.getAll().on("value", this.onDataChange);
     },
+    showModal() {
+      this.isModalVisible = true;
+    },
+    closeModal() {
+      this.isModalVisible = false;
   },
 };
 </script>
+
 <style>
-.bi {
+button.bi-plus-circle-fill {
   color: rgba(255, 99, 120, 1);
   size: 500px;
-  margin-left: 240px;
-  margin-right: 30px;
+  margin-left: 200px;
+  margin-right: 50px;
   font-size: 50px;
 }
 
