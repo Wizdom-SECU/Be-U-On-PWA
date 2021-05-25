@@ -79,3 +79,4 @@ public/.DS_Store
 
 .firebase
 dist
+package-lock.json
