@@ -1,14 +1,3 @@
-<script>
-export default {
-  name: "Modal",
-  methods: {
-    close() {
-      this.$emit("close");
-    },
-  },
-};
-</script>
-
 <template>
   <div class="container px-3 py-4">
     <transition name="modal-fade">
@@ -48,85 +37,116 @@ export default {
           </header>
 
           <section class="modal-body" id="modalDescription">
-              <form class="row gy-2 gx-3 align-items-center">
-                <div class="col-12">
-                  <label for="courseTitle" class="form-label"
-                    >Course Title</label
-                  >
+            <form class="row gy-2 gx-3 align-items-center">
+              <div class="col-12">
+                <label for="courseTitle" class="form-label">Course Title</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  aria-label="courseTitle"
+                  v-model="courseObject.courseTitle"
+                />
+              </div>
+              <div class="col-12">
+                <label for="courseDesc" class="form-label"
+                  >Course Description</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  aria-label="courseDesc"
+                  v-model="courseObject.courseDesc"
+                />
+              </div>
+              <div class="col-12">
+                <label for="teachBy" class="form-label">Teach by</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  aria-label="teachBy"
+                  v-model="courseObject.teachBy"
+                />
+              </div>
+              <div class="col-auto">
+                <label for="time" class="form-label">Time</label>
+                <input
+                  type="datetime-local"
+                  class="form-control"
+                  v-model="courseObject.time"
+                />
+              </div>
+              <div class="col-auto">
+                <label for="price" class="form-label">Price/hour</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  v-model="courseObject.price"
+                />
+              </div>
+              <div class="col-auto">
+                <label for="price" class="form-label">Hours</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  v-model="courseObject.hours"
+                />
+              </div>
+              <div class="col-12">
+                <label for="location" class="form-label">Location</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  aria-label="location"
+                  v-model="courseObject.location"
+                />
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  value="onsite"
+                  id="onsite"
+                  style="padding: 5px; margin: 10px"
+                  v-model="courseObject.courseType"
+                />
+                <label
+                  class="form-check-label"
+                  for="onsite"
+                  style="padding: 5px"
+                >
+                  Onsite
+                </label>
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  value="online"
+                  id="online"
+                  style="padding: 5px; margin: 10px"
+                  v-model="courseObject.courseType"
+                />
+                <label
+                  class="form-check-label"
+                  for="online"
+                  style="padding: 5px"
+                >
+                  Online
+                </label>
+                <div class="col-12" v-if="courseObject.courseType == 'online'">
+                  <label for="zoomlink" class="form-label">Link to Zoom</label>
                   <input
                     type="text"
                     class="form-control"
-                    aria-label="courseTitle"
+                    aria-label="zoomlink"
+                    v-model="courseObject.zoomLink"
                   />
                 </div>
-                <div class="col-12">
-                  <label for="courseDesc" class="form-label"
-                    >Course Description</label
-                  >
-                  <input
-                    type="text"
-                    class="form-control"
-                    aria-label="courseDesc"
-                  />
-                </div>
-                <div class="col-12">
-                  <label for="teachBy" class="form-label">Teach by</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    aria-label="teachBy"
-                  />
-                </div>
-                <div class="col-auto">
-                  <label for="time" class="form-label">Time</label>
-                  <input type="date" class="form-control" />
-                </div>
-                <div class="col-auto">
-                  <label for="price" class="form-label">Price</label>
-                  <input type="text" class="form-control" />
-                </div>
-                <div class="col-12">
-                  <label for="location" class="form-label">Location</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    aria-label="location"
-                  />
-                  <input
-                    class="form-check-input"
-                    type="checkbox"
-                    id="gridCheck1"
-                    style="padding: 5px; margin: 10px"
-                  />
-                  <label
-                    class="form-check-label"
-                    for="gridCheck1"
-                    style="padding: 5px"
-                  >
-                    Onsite
-                  </label>
-                  <input
-                    class="form-check-input"
-                    type="checkbox"
-                    id="gridCheck1"
-                    style="padding: 5px; margin: 10px"
-                  />
-                  <label
-                    class="form-check-label"
-                    for="gridCheck1"
-                    style="padding: 5px"
-                  >
-                    Online
-                  </label>
-                </div>
-              </form>
+              </div>
+            </form>
           </section>
 
           <footer class="modal-footer">
             <button
               type="submit"
               class="btn btn-green btn-sm"
-              @click="close"
+              @click="createCourseDetail()"
               aria-label="Close modal"
             >
               Save
@@ -137,7 +157,42 @@ export default {
     </transition>
   </div>
 </template>
-
+<script>
+import moment from "moment";
+export default {
+  name: "Modal",
+  data() {
+    return {
+      courseObject: {
+        courseTitle: "",
+        courseDesc: "",
+        teachBy: "",
+        price: 0,
+        location: "",
+        time: moment(new Date()).format("DD/MM/YYYY hh:mm"),
+        courseType: "onsite",
+        paymentStatus: "waiting payment",
+        studentList: [],
+        cost: 0,
+        hours: 0,
+        totalPrice: 0,
+        zoomLink: "",
+      },
+    };
+  },
+  methods: {
+    createCourseDetail() {
+      this.courseObject.totalPrice =
+        this.courseObject.price * this.courseObject.hours;
+      this.courseObject.cost = 0.1 * this.courseObject.totalPrice;
+      this.$emit("createCourseDetail", this.courseObject);
+    },
+    close() {
+      this.$emit("close");
+    },
+  },
+};
+</script>
 <style>
 @import url("https://fonts.googleapis.com/css2?family=Sarabun:wght@100&display=swap");
 

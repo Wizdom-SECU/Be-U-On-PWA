@@ -1,5 +1,5 @@
 <template>
-  <div class="container px-3 py-4">
+  <div id="coursePage" class="container px-3 py-4">
     <h4 class="d-flex justify-content-between align-items-center mb-3">
       <span class="text-primary">Course List</span>
     </h4>
@@ -29,85 +29,42 @@
         <span class="p-1 link-secondary rounded-pill bg-primary text-light"
           >#Physical Education</span
         >
-        <!-- <a class="p-2 link-secondary" href="#">Arts</a> -->
       </nav>
     </div>
-      <div class="row gx-3 gy-3">
-        <div class="col-sm" v-for="item in courseList" :key="item.courseTitle">
-          <div class="card">
-            <img src="../assets/3808949.jpg" class="card-img-top" />
-            <div class="card-body">
-              <h5 class="card-title">{{ item.courseTitle }}</h5>
-              <p class="card-text">{{ item.teachBy }}</p>
-              <button
-                class="btn btn-success"
-                data-bs-toggle="offcanvas"
-                aria-controls="offcanvasBottom"
-                id="enrollBtn"
-                v-on:click="insertToDatabase"
-              >
-                Enroll
-              </button>
-            </div>
-          </div>
-        </div>
-        <!-- <div class="col-sm">
-        <div class="card">
-          <img src="../assets/3808949.jpg" class="card-img-top" />
-          <div class="card-body">
-            <h5 class="card-title">Science</h5>
-            <p class="card-text">Tutor Annop</p>
-            <a class="btn btn-lg btn-primary" data-bs-toggle="offcanvas"
-              >Enroll</a
-            >
-          </div>
-        </div>
-      </div> -->
-      </div>
-    </div>
-
     <div id="app">
       <button
+        id="createCourseBtn"
         class="bi bi-plus-circle-fill btn btn-outline-light"
         type="button"
         @click="showModal"
       ></button>
 
-      <Modal v-show="isModalVisible" @close="closeModal">
+      <Modal v-show="isModalVisible" @close="closeModal" @createCourseDetail="getDataFromModal($event)">
         <template v-slot:header> This is a new modal header. </template>
 
         <template v-slot:body> This is a new modal body. </template>
 
         <template v-slot:footer> This is a new modal footer. </template>
       </Modal>
-    <button
-      class="bi bi-plus-circle-fill btn btn-outline-light"
-      type="button"
-      data-bs-toggle="offcanvas"
-      data-bs-target="#offcanvasBottom"
-      aria-controls="offcanvasBottom"
-    ></button>
-
-    <div
-      class="offcanvas offcanvas-bottom"
-      :class="showMenu ? 'show' : ''"
-      tabindex="-1"
-      id="offcanvasBottom"
-      :style="{ visibility: showMenu ? 'visible' : 'hidden' }"
-      aria-labelledby="offcanvasBottomLabel"
-    >
-      <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="offcanvasBottomLabel">
-          Offcanvas bottom
-        </h5>
-        <button
-          type="button"
-          class="btn-close text-reset"
-          data-bs-dismiss="offcanvas"
-          aria-label="Close"
-        ></button>
+    </div>
+    <div class="row gx-3 gy-3">
+      <div class="col-sm" v-for="item in courseList" :key="item.courseTitle">
+        <div class="card">
+          <img src="../assets/3808949.jpg" class="card-img-top" />
+          <div class="card-body">
+            <h5 class="card-title">{{ item.courseTitle }}</h5>
+            <p class="card-text">{{ item.teachBy }}</p>
+            <button
+              class="btn btn-success"
+              data-bs-toggle="offcanvas"
+              id="enrollBtn"
+              v-on:click="insertToDatabase"
+            >
+              Enroll
+            </button>
+          </div>
+        </div>
       </div>
-      <div class="offcanvas-body small">...</div>
     </div>
   </div>
 </template>
@@ -119,6 +76,9 @@ import Modal from "../components/Modal.vue";
 
 export default {
   name: "Classroom",
+  components: {
+    Modal,
+  },
   created() {
     this.getAllCourse();
   },
@@ -140,7 +100,7 @@ export default {
       studentId: "test1234",
       maxStudent: 5,
       courseList: [],
-	  isModalVisible: false,
+      isModalVisible: false,
     };
   },
   methods: {
@@ -193,6 +153,12 @@ export default {
     },
     closeModal() {
       this.isModalVisible = false;
+    },
+    getDataFromModal(object){
+      this.closeModal();
+      this.courseObject = object;
+      this.insertToDatabase(this.courseObject);
+    }
   },
 };
 </script>
@@ -201,12 +167,19 @@ export default {
 button.bi-plus-circle-fill {
   color: rgba(255, 99, 120, 1);
   size: 500px;
-  margin-left: 200px;
-  margin-right: 50px;
   font-size: 50px;
 }
 
 .p-1 {
   margin: 1px;
+}
+
+#app {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.coursePage{
+  position: absolute;
 }
 </style>
