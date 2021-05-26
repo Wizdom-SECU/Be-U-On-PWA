@@ -1,5 +1,5 @@
 <template>
-  <div class="container px-3 py-4">
+  <div id="coursePage" class="container px-3 py-4">
     <h4 class="d-flex justify-content-between align-items-center mb-3">
       <span class="text-primary">Course List</span>
     </h4>
@@ -31,6 +31,22 @@
         >
       </nav>
     </div>
+    <div id="app">
+      <button
+        id="createCourseBtn"
+        class="bi bi-plus-circle-fill btn btn-outline-light"
+        type="button"
+        @click="showModal"
+      ></button>
+
+      <Modal v-show="isModalVisible" @close="closeModal" @createCourseDetail="getDataFromModal($event)">
+        <template v-slot:header> This is a new modal header. </template>
+
+        <template v-slot:body> This is a new modal body. </template>
+
+        <template v-slot:footer> This is a new modal footer. </template>
+      </Modal>
+    </div>
     <div class="row gx-3 gy-3">
       <div class="col-sm" v-for="item in courseList" :key="item.courseTitle">
         <div class="card">
@@ -41,7 +57,6 @@
             <button
               class="btn btn-success"
               data-bs-toggle="offcanvas"
-              aria-controls="offcanvasBottom"
               id="enrollBtn"
               v-on:click="insertToDatabase"
             >
@@ -51,22 +66,6 @@
         </div>
       </div>
     </div>
-  </div>
-
-  <div id="app">
-    <button
-      class="bi bi-plus-circle-fill btn btn-outline-light"
-      type="button"
-      @click="showModal"
-    ></button>
-
-    <Modal v-show="isModalVisible" @close="closeModal">
-      <template v-slot:header> This is a new modal header. </template>
-
-      <template v-slot:body> This is a new modal body. </template>
-
-      <template v-slot:footer> This is a new modal footer. </template>
-    </Modal>
   </div>
 </template>
 
@@ -150,12 +149,16 @@ export default {
       courseService.getAll().on("value", this.onDataChange);
     },
     showModal() {
-      console.log("test");
       this.isModalVisible = true;
     },
     closeModal() {
       this.isModalVisible = false;
     },
+    getDataFromModal(object){
+      this.closeModal();
+      this.courseObject = object;
+      this.insertToDatabase(this.courseObject);
+    }
   },
 };
 </script>
@@ -164,12 +167,19 @@ export default {
 button.bi-plus-circle-fill {
   color: rgba(255, 99, 120, 1);
   size: 500px;
-  margin-left: 200px;
-  margin-right: 50px;
   font-size: 50px;
 }
 
 .p-1 {
   margin: 1px;
+}
+
+#app {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.coursePage{
+  position: absolute;
 }
 </style>
