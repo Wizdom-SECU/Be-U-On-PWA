@@ -37,7 +37,10 @@
           </header>
 
           <section class="modal-body" id="modalDescription">
-            <form class="row gy-2 gx-3 align-items-center">
+            <form
+              class="row gy-2 gx-3 align-items-center"
+              @submit.prevent="createCourseDetail"
+            >
               <div class="col-12">
                 <label for="courseTitle" class="form-label">Course Title</label>
                 <input
@@ -45,7 +48,7 @@
                   class="form-control"
                   aria-label="courseTitle"
                   v-model="courseObject.courseTitle"
-                />
+                  required>
               </div>
               <div class="col-12">
                 <label for="courseDesc" class="form-label"
@@ -139,19 +142,19 @@
                   />
                 </div>
               </div>
+
+              <!-- <footer class="modal-footer"> -->
+                <button
+                  type="submit"
+                  class="btn btn-green btn-sm"
+                  @click="createCourseDetail()"
+                  aria-label="Close modal"
+                >
+                  Save
+                </button>
+              <!-- </footer> -->
             </form>
           </section>
-
-          <footer class="modal-footer">
-            <button
-              type="submit"
-              class="btn btn-green btn-sm"
-              @click="createCourseDetail()"
-              aria-label="Close modal"
-            >
-              Save
-            </button>
-          </footer>
         </div>
       </div>
     </transition>
@@ -163,6 +166,7 @@ export default {
   name: "Modal",
   data() {
     return {
+      action: "",
       courseObject: {
         courseTitle: "",
         courseDesc: "",
