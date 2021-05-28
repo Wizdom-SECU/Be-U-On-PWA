@@ -37,10 +37,7 @@
           </header>
 
           <section class="modal-body" id="modalDescription">
-            <form
-              class="row gy-2 gx-3 align-items-center"
-              @submit.prevent="createCourseDetail"
-            >
+            <form class="row gy-2 gx-3 align-items-center">
               <div class="col-12">
                 <label for="courseTitle" class="form-label">Course Title</label>
                 <input
@@ -48,7 +45,7 @@
                   class="form-control"
                   aria-label="courseTitle"
                   v-model="courseObject.courseTitle"
-                  required>
+                />
               </div>
               <div class="col-12">
                 <label for="courseDesc" class="form-label"
@@ -95,13 +92,6 @@
                 />
               </div>
               <div class="col-12">
-                <label for="location" class="form-label">Location</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  aria-label="location"
-                  v-model="courseObject.location"
-                />
                 <input
                   class="form-check-input"
                   type="radio"
@@ -132,6 +122,15 @@
                 >
                   Online
                 </label>
+                 <div class="col-12" v-if="courseObject.courseType == 'onsite'">
+                  <label for="location" class="form-label">Location</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    aria-label="location"
+                    v-model="courseObject.location"
+                  />
+                </div>
                 <div class="col-12" v-if="courseObject.courseType == 'online'">
                   <label for="zoomlink" class="form-label">Link to Zoom</label>
                   <input
@@ -142,19 +141,19 @@
                   />
                 </div>
               </div>
-
-              <!-- <footer class="modal-footer"> -->
-                <button
-                  type="submit"
-                  class="btn btn-green btn-sm"
-                  @click="createCourseDetail()"
-                  aria-label="Close modal"
-                >
-                  Save
-                </button>
-              <!-- </footer> -->
             </form>
           </section>
+
+          <footer class="modal-footer">
+            <button
+              type="submit" id="saveBtn"
+              class="btn btn-green btn-sm"
+              @click="createCourseDetail()"
+              aria-label="Close modal"
+            >
+              Save
+            </button>
+          </footer>
         </div>
       </div>
     </transition>
@@ -166,7 +165,6 @@ export default {
   name: "Modal",
   data() {
     return {
-      action: "",
       courseObject: {
         courseTitle: "",
         courseDesc: "",
@@ -291,5 +289,21 @@ input {
 .modal-fade-enter-active,
 .modal-fade-leave-active {
   transition: opacity 0s ease;
+}
+
+#saveBtn{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 24px;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+.card-img-top {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 300px;
 }
 </style>

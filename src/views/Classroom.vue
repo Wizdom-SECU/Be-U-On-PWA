@@ -11,8 +11,8 @@
         aria-label="Search"
       />
     </form>
-    <!-- <div>Category:</div> -->
-    <!-- <div class="nav-scroller py-1 mb-2">
+    <div>Category:</div>
+    <div class="nav-scroller py-1 mb-2">
       <nav class="nav d-flex justify-content-between">
         <span class="p-1 link-secondary rounded-pill bg-primary text-light"
           >#All</span
@@ -30,7 +30,7 @@
           >#Physical Education</span
         >
       </nav>
-    </div> -->
+    </div>
     <div id="app">
       <button
         id="createCourseBtn"
@@ -39,11 +39,7 @@
         @click="showModal"
       ></button>
 
-      <Modal
-        v-show="isModalVisible"
-        @close="closeModal"
-        @createCourseDetail="getDataFromModal($event)"
-      >
+      <Modal v-show="isModalVisible" @close="closeModal" @createCourseDetail="getDataFromModal($event)">
         <template v-slot:header> This is a new modal header. </template>
 
         <template v-slot:body> This is a new modal body. </template>
@@ -51,14 +47,13 @@
         <template v-slot:footer> This is a new modal footer. </template>
       </Modal>
     </div>
-    <div class="row">
-      <div class="col-3" style="margin-bottom : 20px" v-for="item in courseList" :key="item.courseTitle">
-        <div class="col-12">
-          <div class="card">
-            <img src="../assets/3808949.jpg" class="card-img-top" />
-            <div class="card-body">
-              <div class="row gx-3 gy-3">
-                <div class="col-6" style="align: left">
+    <div class="row gx-3 gy-3">
+      <div class="col-sm" v-for="item in courseList" :key="item.courseTitle">
+        <div class="card">
+          <img src="../assets/3808949.jpg" class="card-img-top" />
+          <div class="card-body">
+            <div class="row gx-3 gy-3">
+              <div class="col-6" style="align: left">
                   <p
                     class="card-title"
                     style="color: blue; font-size: 24px; font-weight: bold"
@@ -77,7 +72,8 @@
                     {{ item.courseType }}
                   </p>
                 </div>
-                <div class="col-6" style="text-align: right">
+
+                  <div class="col-6" style="text-align: right">
                   <p class="card-text">by : {{ item.teachBy }}</p>
                   <p class="card-text">{{ item.price }} ฿/ Hours</p>
                   <p
@@ -91,8 +87,8 @@
                     {{ item.studentList.length }} / {{ maxStudent }}
                   </p>
                 </div>
-              </div>
-              <button
+            </div>
+            <button
                 class="btn btn-success"
                 data-bs-toggle="offcanvas"
                 id="enrollBtn"
@@ -102,7 +98,6 @@
               >
                 Enroll
               </button>
-            </div>
           </div>
         </div>
       </div>
@@ -113,6 +108,7 @@
 <script>
 import moment from "moment";
 import courseService from "../services/CourseService";
+import paymentService from "../services/PaymentService";
 import Modal from "../components/Modal.vue";
 
 export default {
@@ -125,7 +121,6 @@ export default {
   },
   data() {
     return {
-      action: "create",
       courseObject: {
         courseTitle: "",
         courseDesc: "",
@@ -171,14 +166,13 @@ export default {
     },
     enrollCourse() {
       this.courseObject.studentList.push(this.studentId);
-      console.log(this.courseObject.studentList);
     },
-    viewCourseDetail() {},
     insertToDatabase() {
       this.enrollCourse();
       courseService
         .create(this.courseObject)
-        .then(() => {
+        .then((res) => {
+          paymentService.mockUpdatePaymentStatus(res.getKey());
           console.log("Created new item successfully!");
         })
         .catch((e) => {
@@ -194,11 +188,11 @@ export default {
     closeModal() {
       this.isModalVisible = false;
     },
-    getDataFromModal(object) {
+    getDataFromModal(object){
       this.closeModal();
       this.courseObject = object;
       this.insertToDatabase(this.courseObject);
-    },
+    }
   },
 };
 </script>
@@ -219,7 +213,7 @@ button.bi-plus-circle-fill {
   justify-content: flex-end;
 }
 
-.coursePage {
+.coursePage{
   position: absolute;
 }
 </style>
