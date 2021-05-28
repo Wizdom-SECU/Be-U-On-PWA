@@ -52,16 +52,52 @@
         <div class="card">
           <img src="../assets/3808949.jpg" class="card-img-top" />
           <div class="card-body">
-            <h5 class="card-title">{{ item.courseTitle }}</h5>
-            <p class="card-text">{{ item.teachBy }}</p>
+            <div class="row gx-3 gy-3">
+              <div class="col-6" style="align: left">
+                  <p
+                    class="card-title"
+                    style="color: blue; font-size: 24px; font-weight: bold"
+                  >
+                    {{ item.courseTitle }}
+                  </p>
+                  <p class="card-text">{{ item.courseDesc }}</p>
+                  <p
+                    class="card-text"
+                    v-bind:style="
+                      item.courseType == 'onsite'
+                        ? 'color : orange'
+                        : 'color : green'
+                    "
+                  >
+                    {{ item.courseType }}
+                  </p>
+                </div>
+
+                  <div class="col-6" style="text-align: right">
+                  <p class="card-text">by : {{ item.teachBy }}</p>
+                  <p class="card-text">{{ item.price }} ฿/ Hours</p>
+                  <p
+                    class="card-text"
+                    v-bind:style="
+                      item.studentList.length < maxStudent
+                        ? 'color : green'
+                        : 'color : gray'
+                    "
+                  >
+                    {{ item.studentList.length }} / {{ maxStudent }}
+                  </p>
+                </div>
+            </div>
             <button
-              class="btn btn-success"
-              data-bs-toggle="offcanvas"
-              id="enrollBtn"
-              v-on:click="insertToDatabase"
-            >
-              Enroll
-            </button>
+                class="btn btn-success"
+                data-bs-toggle="offcanvas"
+                id="enrollBtn"
+                style="margin-top: 15px"
+                v-on:click="insertToDatabase"
+                :disabled="item.studentList.length > maxStudent"
+              >
+                Enroll
+              </button>
           </div>
         </div>
       </div>
@@ -72,6 +108,7 @@
 <script>
 import moment from "moment";
 import courseService from "../services/CourseService";
+import paymentService from "../services/PaymentService";
 import Modal from "../components/Modal.vue";
 
 export default {
@@ -128,17 +165,14 @@ export default {
       console.log(this.courseList);
     },
     enrollCourse() {
-      if (this.courseObject.studentList.length > this.maxStudent) {
-        document.getElementById("enrollBtn").setAttribute("disabled", true);
-      }
       this.courseObject.studentList.push(this.studentId);
-      console.log(this.courseObject.studentList);
     },
     insertToDatabase() {
       this.enrollCourse();
       courseService
         .create(this.courseObject)
-        .then(() => {
+        .then((res) => {
+          paymentService.mockUpdatePaymentStatus(res.getKey());
           console.log("Created new item successfully!");
         })
         .catch((e) => {
