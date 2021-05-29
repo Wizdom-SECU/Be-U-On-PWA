@@ -7,11 +7,13 @@
       <input
         class="form-control me-2"
         type="search"
-        placeholder="Search"
+        placeholder="Search By Course Title"
         aria-label="Search"
+        v-model="searchString"
+        @keyup="searchByTitle()"
       />
     </form>
-    <div>Category:</div>
+    <!-- <div>Category:</div>
     <div class="nav-scroller py-1 mb-2">
       <nav class="nav d-flex justify-content-between">
         <span class="p-1 link-secondary rounded-pill bg-primary text-light"
@@ -30,7 +32,7 @@
           >#Physical Education</span
         >
       </nav>
-    </div>
+    </div> -->
     <div id="app">
       <button
         id="createCourseBtn"
@@ -102,10 +104,9 @@
               data-bs-toggle="offcanvas"
               id="enrollBtn"
               style="margin-top: 15px"
-              v-on:click="enrollCourse(index)"
-              :disabled="item.studentList.length > maxStudent"
+              v-on:click="viewCourse(index)"
             >
-              Enroll
+              View
             </button>
           </div>
         </div>
@@ -115,7 +116,6 @@
 </template>
 
 <script>
-import moment from "moment";
 import courseService from "../services/CourseService";
 import paymentService from "../services/PaymentService";
 import Modal from "../components/Modal.vue";
@@ -132,9 +132,10 @@ export default {
   data() {
     return {
       courseObject: new Course(),
-      maxStudent: 5,
       courseList: [],
       isModalVisible: false,
+      maxStudent: 5,
+      searchString : ""
     };
   },
   methods: {
@@ -165,7 +166,7 @@ export default {
 
       this.courseList = list;
     },
-    enrollCourse(index) {
+    viewCourse(index) {
       this.courseObject = this.courseList[index];
       this.showModal();
     },
@@ -200,6 +201,12 @@ export default {
       this.courseObject = new Course();
       this.showModal();
     },
+    searchByTitle(){
+      this.courseList = this.courseList.filter(item => item.courseTitle.toLowerCase().includes(this.searchString.toLowerCase()));
+      if(this.searchString == ''){
+        this.getAllCourse();
+      }
+    }
   },
 };
 </script>

@@ -4,6 +4,7 @@ export default class Student {
     allowTracking = false;
     parentId = "";
     checkInTime = "";
+    location = "";
     checkOutTime = "";
     studentUsername = "";
 
@@ -53,5 +54,11 @@ export default class Student {
     }
     set studentUsername(value) {
         this.studentUsername = value;
+    }
+    get location(){
+        return this.location;
+    }
+    set location(value) {
+        this.location = value;
     }
 }
