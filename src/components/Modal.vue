@@ -1,0 +1,309 @@
+<template>
+  <div class="container px-3 py-4">
+    <transition name="modal-fade">
+      <div class="modal-backdrop">
+        <div
+          class="modal"
+          role="dialog"
+          aria-labelledby="modalTitle"
+          aria-describedby="modalDescription"
+        >
+          <header class="modal-header" id="modalTitle">
+            <button
+              class="bi bi-arrow-left-circle btn-close"
+              type="button"
+              @click="close"
+              aria-label="Close modal"
+            ></button>
+            <slot name="">
+              <div class="container px-3 py-4">
+                <img
+                  src="../assets/standing.png"
+                  class="card-img-top"
+                  height="100"
+                />
+                <h2
+                  class="card-text"
+                  style="
+                    color: black;
+                    text-align: center;
+                    font-family: Sarabun, sans-serif;
+                  "
+                >
+                  Create your course
+                </h2>
+              </div>
+            </slot>
+          </header>
+
+          <section class="modal-body" id="modalDescription">
+            <form class="row gy-2 gx-3 align-items-center">
+              <div class="col-12">
+                <label for="courseTitle" class="form-label">Course Title</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  aria-label="courseTitle"
+                  v-model="courseObject.courseTitle"
+                />
+              </div>
+              <div class="col-12">
+                <label for="courseDesc" class="form-label"
+                  >Course Description</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  aria-label="courseDesc"
+                  v-model="courseObject.courseDesc"
+                />
+              </div>
+              <div class="col-12">
+                <label for="teachBy" class="form-label">Teach by</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  aria-label="teachBy"
+                  v-model="courseObject.teachBy"
+                />
+              </div>
+              <div class="col-auto">
+                <label for="time" class="form-label">Time</label>
+                <input
+                  type="datetime-local"
+                  class="form-control"
+                  v-model="courseObject.time"
+                />
+              </div>
+              <div class="col-auto">
+                <label for="price" class="form-label">Price/hour</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  v-model="courseObject.price"
+                />
+              </div>
+              <div class="col-auto">
+                <label for="price" class="form-label">Hours</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  v-model="courseObject.hours"
+                />
+              </div>
+              <div class="col-12">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  value="onsite"
+                  id="onsite"
+                  style="padding: 5px; margin: 10px"
+                  v-model="courseObject.courseType"
+                />
+                <label
+                  class="form-check-label"
+                  for="onsite"
+                  style="padding: 5px"
+                >
+                  Onsite
+                </label>
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  value="online"
+                  id="online"
+                  style="padding: 5px; margin: 10px"
+                  v-model="courseObject.courseType"
+                />
+                <label
+                  class="form-check-label"
+                  for="online"
+                  style="padding: 5px"
+                >
+                  Online
+                </label>
+                 <div class="col-12" v-if="courseObject.courseType == 'onsite'">
+                  <label for="location" class="form-label">Location</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    aria-label="location"
+                    v-model="courseObject.location"
+                  />
+                </div>
+                <div class="col-12" v-if="courseObject.courseType == 'online'">
+                  <label for="zoomlink" class="form-label">Link to Zoom</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    aria-label="zoomlink"
+                    v-model="courseObject.zoomLink"
+                  />
+                </div>
+              </div>
+            </form>
+          </section>
+
+          <footer class="modal-footer">
+            <button
+              type="submit" id="saveBtn"
+              class="btn btn-green btn-sm"
+              @click="createCourseDetail()"
+              aria-label="Close modal"
+            >
+              Save
+            </button>
+          </footer>
+        </div>
+      </div>
+    </transition>
+  </div>
+</template>
+<script>
+import moment from "moment";
+export default {
+  name: "Modal",
+  data() {
+    return {
+      courseObject: {
+        courseTitle: "",
+        courseDesc: "",
+        teachBy: "",
+        price: 0,
+        location: "",
+        time: moment(new Date()).format("DD/MM/YYYY hh:mm"),
+        courseType: "onsite",
+        paymentStatus: "waiting payment",
+        studentList: [],
+        cost: 0,
+        hours: 0,
+        totalPrice: 0,
+        zoomLink: "",
+      },
+    };
+  },
+  methods: {
+    createCourseDetail() {
+      this.courseObject.totalPrice =
+        this.courseObject.price * this.courseObject.hours;
+      this.courseObject.cost = 0.1 * this.courseObject.totalPrice;
+      this.$emit("createCourseDetail", this.courseObject);
+    },
+    close() {
+      this.$emit("close");
+    },
+  },
+};
+</script>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Sarabun:wght@100&display=swap");
+
+button.bi-arrow-left-circle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: none;
+  font-size: 30px;
+  cursor: pointer;
+  font-weight: bold;
+  background: transparent;
+}
+
+h2 {
+  flex-direction: column;
+}
+
+label,
+input {
+  font-family: "Sarabun", sans-serif;
+}
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+  background: #ffffff;
+  box-shadow: 2px 2px 20px 1px;
+  overflow-x: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header,
+.modal-footer {
+  padding: 5px;
+  display: flex;
+}
+
+.modal-header {
+  position: relative;
+  border-bottom: 1px solid #eeeeee;
+  color: #4aae9b;
+  justify-content: space-between;
+}
+
+.modal-footer {
+  border-top: 1px solid #eeeeee;
+  flex-direction: column;
+}
+
+.modal-body {
+  position: relative;
+  padding: 10px 10px;
+}
+
+/* .btn-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  border: none;
+  font-size: 24px;
+  padding: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  color: #4aae9b;
+  background: transparent;
+} */
+
+.btn-green {
+  color: white;
+  background: #4aae9b;
+  border: 1px solid #4aae9b;
+  border-radius: 2px;
+}
+
+.modal-fade-enter,
+.modal-fade-leave-to {
+  opacity: 0;
+}
+
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+  transition: opacity 0s ease;
+}
+
+#saveBtn{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 24px;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+.card-img-top {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 300px;
+}
+</style>
