@@ -40,7 +40,7 @@
             <form class="row gy-2 gx-3 align-items-center">
               <div class="col-12">
                 <label for="courseTitle" class="form-label">Course Title</label>
-                <input
+                <input :readonly="isEnrollCourse()"
                   type="text"
                   class="form-control"
                   aria-label="courseTitle"
@@ -51,7 +51,7 @@
                 <label for="courseDesc" class="form-label"
                   >Course Description</label
                 >
-                <input
+                <input :readonly="isEnrollCourse()"
                   type="text"
                   class="form-control"
                   aria-label="courseDesc"
@@ -60,7 +60,7 @@
               </div>
               <div class="col-12">
                 <label for="teachBy" class="form-label">Teach by</label>
-                <input
+                <input :readonly="isEnrollCourse()"
                   type="text"
                   class="form-control"
                   aria-label="teachBy"
@@ -69,7 +69,7 @@
               </div>
               <div class="col-auto">
                 <label for="time" class="form-label">Time</label>
-                <input
+                <input :readonly="isEnrollCourse()"
                   type="datetime-local"
                   class="form-control"
                   v-model="courseObject.time"
@@ -77,7 +77,7 @@
               </div>
               <div class="col-auto">
                 <label for="price" class="form-label">Price/hour</label>
-                <input
+                <input :readonly="isEnrollCourse()"
                   type="text"
                   class="form-control"
                   v-model="courseObject.price"
@@ -85,14 +85,14 @@
               </div>
               <div class="col-auto">
                 <label for="price" class="form-label">Hours</label>
-                <input
+                <input :readonly="isEnrollCourse()"
                   type="text"
                   class="form-control"
                   v-model="courseObject.hours"
                 />
               </div>
               <div class="col-12">
-                <input
+                <input :disabled="isEnrollCourse()"
                   class="form-check-input"
                   type="radio"
                   value="onsite"
@@ -107,7 +107,7 @@
                 >
                   Onsite
                 </label>
-                <input
+                <input :disabled="isEnrollCourse()"
                   class="form-check-input"
                   type="radio"
                   value="online"
@@ -124,7 +124,7 @@
                 </label>
                  <div class="col-12" v-if="courseObject.courseType == 'onsite'">
                   <label for="location" class="form-label">Location</label>
-                  <input
+                  <input :readonly="isEnrollCourse()"
                     type="text"
                     class="form-control"
                     aria-label="location"
@@ -133,7 +133,7 @@
                 </div>
                 <div class="col-12" v-if="courseObject.courseType == 'online'">
                   <label for="zoomlink" class="form-label">Link to Zoom</label>
-                  <input
+                  <input :readonly="isEnrollCourse()"
                     type="text"
                     class="form-control"
                     aria-label="zoomlink"
@@ -145,13 +145,22 @@
           </section>
 
           <footer class="modal-footer">
-            <button
+            <button v-if="!courseObject.courseId"
               type="submit" id="saveBtn"
               class="btn btn-green btn-sm"
               @click="createCourseDetail()"
               aria-label="Close modal"
             >
               Save
+            </button>
+
+            <button v-if="courseObject.courseId"
+              type="submit" id="saveBtn"
+              class="btn btn-green btn-sm"
+              @click="enrollCourse()"
+              aria-label="Close modal"
+            >
+              Enroll
             </button>
           </footer>
         </div>
@@ -160,38 +169,43 @@
   </div>
 </template>
 <script>
-import moment from "moment";
+import courseService from "../services/CourseService";
+import Student from "../model/Student"
 export default {
   name: "Modal",
+  props : ['courseSelected'],
   data() {
     return {
-      courseObject: {
-        courseTitle: "",
-        courseDesc: "",
-        teachBy: "",
-        price: 0,
-        location: "",
-        time: moment(new Date()).format("DD/MM/YYYY hh:mm"),
-        courseType: "onsite",
-        paymentStatus: "waiting payment",
-        studentList: [],
-        cost: 0,
-        hours: 0,
-        totalPrice: 0,
-        zoomLink: "",
-      },
+      courseObject: this.courseSelected,
     };
+  },
+  watch : {
+    courseSelected: function ()  {
+      this.courseObject = this.courseSelected;
+    }
   },
   methods: {
     createCourseDetail() {
       this.courseObject.totalPrice =
-        this.courseObject.price * this.courseObject.hours;
+      this.courseObject.price * this.courseObject.hours;
       this.courseObject.cost = 0.1 * this.courseObject.totalPrice;
       this.$emit("createCourseDetail", this.courseObject);
     },
     close() {
       this.$emit("close");
     },
+    isEnrollCourse(){
+      if(this.courseObject.courseId){
+        return true;
+      }
+
+      return false;
+    },
+    enrollCourse(){
+      this.courseObject.studentList.push(new Student('testID' , 'testUsername'));
+      courseService.update(this.courseObject.courseId , this.courseObject);
+      this.close();
+    }
   },
 };
 </script>
