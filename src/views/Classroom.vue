@@ -7,11 +7,13 @@
       <input
         class="form-control me-2"
         type="search"
-        placeholder="Search"
+        placeholder="Search By Course Title"
         aria-label="Search"
+        v-model="searchString"
+        @keyup="searchByTitle()"
       />
     </form>
-    <div>Category:</div>
+    <!-- <div>Category:</div>
     <div class="nav-scroller py-1 mb-2">
       <nav class="nav d-flex justify-content-between">
         <span class="p-1 link-secondary rounded-pill bg-primary text-light"
@@ -30,16 +32,21 @@
           >#Physical Education</span
         >
       </nav>
-    </div>
+    </div> -->
     <div id="app">
       <button
         id="createCourseBtn"
         class="bi bi-plus-circle-fill btn btn-outline-light"
         type="button"
-        @click="showModal"
+        @click="createCourse"
       ></button>
 
-      <Modal v-show="isModalVisible" @close="closeModal" @createCourseDetail="getDataFromModal($event)">
+      <Modal
+        v-show="isModalVisible"
+        @close="closeModal"
+        @createCourseDetail="getDataFromModal($event)"
+        :courseSelected="courseObject"
+      >
         <template v-slot:header> This is a new modal header. </template>
 
         <template v-slot:body> This is a new modal body. </template>
@@ -48,56 +55,59 @@
       </Modal>
     </div>
     <div class="row gx-3 gy-3">
-      <div class="col-sm" v-for="item in courseList" :key="item.courseTitle">
+      <div
+        class="col-sm"
+        v-for="(item, index) in courseList"
+        :key="item.courseTitle"
+      >
         <div class="card">
           <img src="../assets/3808949.jpg" class="card-img-top" />
           <div class="card-body">
             <div class="row gx-3 gy-3">
               <div class="col-6" style="align: left">
-                  <p
-                    class="card-title"
-                    style="color: blue; font-size: 24px; font-weight: bold"
-                  >
-                    {{ item.courseTitle }}
-                  </p>
-                  <p class="card-text">{{ item.courseDesc }}</p>
-                  <p
-                    class="card-text"
-                    v-bind:style="
-                      item.courseType == 'onsite'
-                        ? 'color : orange'
-                        : 'color : green'
-                    "
-                  >
-                    {{ item.courseType }}
-                  </p>
-                </div>
+                <p
+                  class="card-title"
+                  style="color: blue; font-size: 24px; font-weight: bold"
+                >
+                  {{ item.courseTitle }}
+                </p>
+                <p class="card-text">{{ item.courseDesc }}</p>
+                <p
+                  class="card-text"
+                  v-bind:style="
+                    item.courseType == 'onsite'
+                      ? 'color : orange'
+                      : 'color : green'
+                  "
+                >
+                  {{ item.courseType }}
+                </p>
+              </div>
 
-                  <div class="col-6" style="text-align: right">
-                  <p class="card-text">by : {{ item.teachBy }}</p>
-                  <p class="card-text">{{ item.price }} ฿/ Hours</p>
-                  <p
-                    class="card-text"
-                    v-bind:style="
-                      item.studentList.length < maxStudent
-                        ? 'color : green'
-                        : 'color : gray'
-                    "
-                  >
-                    {{ item.studentList.length }} / {{ maxStudent }}
-                  </p>
-                </div>
+              <div class="col-6" style="text-align: right">
+                <p class="card-text">by : {{ item.teachBy }}</p>
+                <p class="card-text">{{ item.price }} ฿/ Hours</p>
+                <p
+                  class="card-text"
+                  v-bind:style="
+                    item.studentList.length < maxStudent
+                      ? 'color : green'
+                      : 'color : gray'
+                  "
+                >
+                  {{ item.studentList.length }} / {{ maxStudent }}
+                </p>
+              </div>
             </div>
             <button
-                class="btn btn-success"
-                data-bs-toggle="offcanvas"
-                id="enrollBtn"
-                style="margin-top: 15px"
-                v-on:click="insertToDatabase"
-                :disabled="item.studentList.length > maxStudent"
-              >
-                Enroll
-              </button>
+              class="btn btn-success"
+              data-bs-toggle="offcanvas"
+              id="enrollBtn"
+              style="margin-top: 15px"
+              v-on:click="viewCourse(index)"
+            >
+              View
+            </button>
           </div>
         </div>
       </div>
@@ -106,10 +116,10 @@
 </template>
 
 <script>
-import moment from "moment";
 import courseService from "../services/CourseService";
 import paymentService from "../services/PaymentService";
 import Modal from "../components/Modal.vue";
+import Course from "../model/Course"
 
 export default {
   name: "Classroom",
@@ -121,23 +131,11 @@ export default {
   },
   data() {
     return {
-      courseObject: {
-        courseTitle: "",
-        courseDesc: "",
-        teachBy: "",
-        price: 0,
-        location: "",
-        time: moment(new Date()).format("DD/MM/YYYY hh:mm"),
-        courseType: "onsite",
-        paymentStatus: "waiting payment",
-        studentList: [],
-        cost: 500,
-        zoomLink: "",
-      },
-      studentId: "test1234",
-      maxStudent: 5,
+      courseObject: new Course(),
       courseList: [],
       isModalVisible: false,
+      maxStudent: 5,
+      searchString : ""
     };
   },
   methods: {
@@ -146,7 +144,11 @@ export default {
 
       items.forEach((item) => {
         let data = item.val();
+        if (data.studentList == undefined) {
+          data.studentList = [];
+        }
         list.push({
+          courseId: item.key,
           courseTitle: data.courseTitle,
           courseDesc: data.courseDesc,
           teachBy: data.teachBy,
@@ -157,23 +159,25 @@ export default {
           paymentStatus: data.paymentStatus,
           studentList: data.studentList,
           cost: data.cost,
+          hours: data.hours,
           zoomLink: data.zoomLink,
         });
       });
 
       this.courseList = list;
-      console.log(this.courseList);
     },
-    enrollCourse() {
-      this.courseObject.studentList.push(this.studentId);
+    viewCourse(index) {
+      this.courseObject = this.courseList[index];
+      this.showModal();
     },
     insertToDatabase() {
-      this.enrollCourse();
       courseService
         .create(this.courseObject)
         .then((res) => {
-          paymentService.mockUpdatePaymentStatus(res.getKey());
-          console.log("Created new item successfully!");
+          paymentService.mockUpdatePaymentStatus(
+            res.getKey(),
+            this.courseObject
+          );
         })
         .catch((e) => {
           console.log(e);
@@ -188,10 +192,20 @@ export default {
     closeModal() {
       this.isModalVisible = false;
     },
-    getDataFromModal(object){
+    getDataFromModal(object) {
       this.closeModal();
       this.courseObject = object;
       this.insertToDatabase(this.courseObject);
+    },
+    createCourse() {
+      this.courseObject = new Course();
+      this.showModal();
+    },
+    searchByTitle(){
+      this.courseList = this.courseList.filter(item => item.courseTitle.toLowerCase().includes(this.searchString.toLowerCase()));
+      if(this.searchString == ''){
+        this.getAllCourse();
+      }
     }
   },
 };
@@ -213,7 +227,7 @@ button.bi-plus-circle-fill {
   justify-content: flex-end;
 }
 
-.coursePage{
+.coursePage {
   position: absolute;
 }
 </style>
