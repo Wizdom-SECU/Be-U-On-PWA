@@ -229,6 +229,7 @@
 </template>
 <script>
 import courseService from "../services/CourseService";
+import studentService from "../services/StudentService";
 import Student from "../model/Student";
 export default {
   name: "Modal",
@@ -269,8 +270,19 @@ export default {
       return false;
     },
     enrollCourse() {
-      this.courseObject.studentList.push(new Student("testID", "testUsername"));
+      let studentObject = new Student("-Max3kJJHMNKAipQMU8D", "testUsername");
+      let list;
+      this.courseObject.studentList.push(studentObject);
       courseService.update(this.courseObject.courseId, this.courseObject);
+      if(studentObject.courseList == undefined){
+        list = [];
+      }else{
+        list = studentObject.courseList;
+      }
+      console.log(list)
+      list.push(this.courseObject);
+      studentService.update(studentObject.studentId , 'courseList' , list);
+      this.$swal("Enroll Success");
       this.close();
     },
     validate() {
