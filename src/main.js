@@ -1,14 +1,28 @@
 import 'bootstrap/scss/bootstrap.scss'
 import 'bootstrap-icons/font/bootstrap-icons.css'
-import { createApp } from 'vue'
+import { createApp, h } from 'vue'
 import router from './router'
 import App from './App.vue'
 import VueSweetalert2 from 'vue-sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
+import {auth} from './firebase'
 
-const app = createApp(App)
+let app = null
+auth.onAuthStateChanged(user => {
+  console.debug('Firebase is ready!')
+  if (user) {
+    // valid user
+    // router.push({ name: 'Home' })
+  } else {
+    console.debug('not login or alredy logout')
+    // router.push({ name: 'SignIn' })
+    if (app) {
+      // already logout
+    } else {
+      // anonymous
+    }
+  }
+  // initialize vue firebase after firebase
+  if (!app) app = createApp(App).use(router).use(VueSweetalert2).mount('#app')
+})
 
-app.use(router);
-app.use(VueSweetalert2);
-
-app.mount('#app');
