@@ -7,6 +7,8 @@ export default class Student {
     location = "";
     checkOutTime = "";
     studentUsername = "";
+    courseList = [];
+    locationTracking = "";
 
     constructor(studentId , studentUsername){
         this.studentId = studentId;

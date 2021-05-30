@@ -15,93 +15,73 @@
         </div>
       </div>
     </div>
-    <hr/>
+    <hr />
     <h4 class="d-flex justify-content-between align-items-center mb-3">
       <span class="text-primary">Up coming</span>
       <span class="badge bg-primary rounded-pill"></span>
     </h4>
     <div class="row gx-3 gy-3">
-      <div class="col-sm" 
-        v-for="(item) in trackingList"
-        :key="item.studentId">
+      <div class="col-sm" v-for="item in studentList" :key="item.studentId">
         <div class="card">
           <div class="card-body">
-            <h5 class="card-title">{{item.courseName}}</h5>
-            <p class="card-text">{{item.time}}</p>
-            <a href="#" class="btn btn-primary" @click.prevent="checkIn(item.studentId)">Check In</a>
+            <h5 class="card-title">{{ item.courseName }}</h5>
+            <p class="card-text">{{ item.time }}</p>
+            <a class="btn btn-primary" @click="checkIn(item.studentId)"
+              >Check In</a
+            >
           </div>
         </div>
-      </div>  
+      </div>
     </div>
-  
   </div>
 </template>
 <script>
-
-import trackingService from "../services/TrackingService";
-import Modal from "../components/Modal.vue";
-import Tracking from "../model/Tracking"
+import studentService from "../services/StudentService";
 import checkInService from "../services/CheckInService";
-
+import Student from "../model/Student";
 export default {
-  name : "Tracking",
-  components: {
-    Modal,
-  },
+  name: "Tracking",
+  components: {},
   created() {
-
-    this.getAllTracking();
-    
+    this.getAllStudent();
   },
   data() {
     return {
-      trackingObject: new Tracking(),
-      trackingList: [],
- 
+      studentObject: new Student(),
+      studentList: [],
     };
   },
-  methods:{
-        onDataChange(items) {
+  methods: {
+    onDataChange(items) {
       let list = [];
 
       items.forEach((item) => {
         let data = item.val();
-        if (data.trackingList == undefined) {
-          data.trackingList = [];
-        }
         list.push({
           studentId: item.key,
+          paymentStatus: data.paymentStatus,
           allowTracking: data.allowTracking,
           parentId: data.parentId,
-          studentUsername: data.studentUsername,
           checkInTime: data.checkInTime,
+          location: data.location,
           checkOutTime: data.checkOutTime,
-          courseId: data.courseId,
-          courseName: data.courseName,
-          locationCourse: data.locationCourse,
-          time: data.time,
+          studentUsername: data.studentUsername,
+          courseList: data.courseList,
+          locationTracking: data.locationTracking,
         });
       });
 
-      this.trackingList = list;
+      this.studentList = list;
     },
 
-    getAllTracking() {
-      trackingService.getAll().on("value", this.onDataChange);
+    getAllStudent() {
+      studentService.getAll().on("value", this.onDataChange);
     },
 
     checkIn(studentId) {
-     this.studentId = studentId ;
-     checkInService.mockUpdateCheckInTime(
-            this.studentId,
-            this.trackingObject,
-          );
+      this.studentId = studentId;
+      checkInService.mockUpdateCheckInTime(this.studentId, this.trackingObject);
     },
-
-    
-  }
-
+  },
 };
-
-
 </script>

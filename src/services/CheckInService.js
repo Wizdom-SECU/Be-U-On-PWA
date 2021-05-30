@@ -1,13 +1,12 @@
 import moment from "moment"
+import StudentService from '../services/StudentService'
 
-import TrackingServiceCheckIn from '../services/TrackingService'
-
-class CheckInTime {
+class CheckInService {
 
     mockUpdateCheckInTime(studentId, object) {
         object.checkInTime = moment(new Date()).format("DD/MM/YYYY hh:mm");
-        TrackingServiceCheckIn.update(studentId, object);
+        StudentService.update(studentId, object);
     }
 }
 
-export default new CheckInTime();
+export default new CheckInService();
