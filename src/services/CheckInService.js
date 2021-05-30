@@ -3,9 +3,12 @@ import StudentService from '../services/StudentService'
 
 class CheckInService {
 
-    mockUpdateCheckInTime(studentId, object) {
-        object.checkInTime = moment(new Date()).format("DD/MM/YYYY hh:mm");
-        StudentService.update(studentId, object);
+    mockUpdateCheckInTime(studentId , value) {
+        StudentService.update(studentId, 'courseList' , value);
+    }
+
+    mockUpdateCheckOutTime(studentId) {
+        StudentService.update(studentId, 'checkOutTime' , moment(new Date()).format("DD/MM/YYYY hh:mm"));
     }
 }
 

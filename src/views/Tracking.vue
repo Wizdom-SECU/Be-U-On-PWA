@@ -1,32 +1,38 @@
 <template>
   <div class="container px-3 py-4" id="tracking">
-    <h4 class="d-flex justify-content-between align-items-center mb-3">
+    <h4
+      class="d-flex justify-content-between align-items-center mb-3"
+      v-if="studyingList.length > 0"
+    >
       <span class="text-primary">Now showing</span>
     </h4>
 
     <div class="row gx-3 gy-3">
-      <div class="col-sm">
+      <div class="col-sm" v-for="item in studyingList" :key="item.courseId">
         <div class="card">
           <div class="card-body">
-            <h5 class="card-title">Course A</h5>
-            <p class="card-text">Tutor Prakit</p>
-            <a @click="checkout" class="btn btn-danger">Leave</a>
+            <h5 class="card-title">{{ item.courseName }}</h5>
+            <p class="card-text">{{ item.time }}</p>
+            <a class="btn btn-primary" @click="checkOut(item.studentId)"
+              >Check Out</a
+            >
           </div>
         </div>
       </div>
     </div>
-    <hr />
+    <hr v-if="studyingList.length > 0" />
     <h4 class="d-flex justify-content-between align-items-center mb-3">
       <span class="text-primary">Up coming</span>
       <span class="badge bg-primary rounded-pill"></span>
     </h4>
     <div class="row gx-3 gy-3">
-      <div class="col-sm" v-for="item in studentList.courseList" :key="item.studentId">
+      <div class="col-sm" v-for="item in comingList" :key="item.courseId">
         <div class="card">
           <div class="card-body">
-            <h5 class="card-title">{{ item.courseName }}</h5>
-            <p class="card-text">{{ item.time }}</p>
-            <a class="btn btn-primary" @click="checkIn(item.studentId)"
+            <h5 class="card-title">{{ item.courseTitle }}</h5>
+            <p class="card-text">By : {{ item.teachBy }}</p>
+            <p class="card-text">{{formatDate(item.time)}}</p>
+            <a class="btn btn-primary" @click="checkIn(item.courseId)"
               >Check In</a
             >
           </div>
@@ -39,7 +45,9 @@
 import studentService from "../services/StudentService";
 import checkInService from "../services/CheckInService";
 import Student from "../model/Student";
-import StudentService from '../services/StudentService';
+import StudentService from "../services/StudentService";
+import moment from "moment"
+
 export default {
   name: "Tracking",
   components: {},
@@ -50,9 +58,10 @@ export default {
     return {
       studentObject: new Student(),
       studentList: [],
-      studyingList : [],
-      comingList : [],
-      studentUsername : "test_student_username_02"
+      studentListTmp: [],
+      studyingList: [],
+      comingList: [],
+      studentUsername: "test_student_username_02",
     };
   },
   methods: {
@@ -75,35 +84,54 @@ export default {
         });
       });
 
-      this.studentList = list;
+      this.studentListTmp = list;
+
+      this.getCourseList();
     },
 
     getAllStudent() {
       studentService.getAll().on("value", this.onDataChange);
-      this.getCourseList();
     },
-    getCourseList(){
-      this.studentList = this.studentList.filter(item => item.studentUsername == this.studentUsername);
+    getCourseList() {
+      this.studentList = this.studentListTmp.filter(
+        (item) => item.studentUsername == this.studentUsername
+      );
+      this.filterList();
     },
-    checkIn(studentId) {
-      this.studentId = studentId;
-      checkInService.mockUpdateCheckInTime(this.studentId, this.trackingObject);
-    },
-    insertNewStudent(){
-      StudentService
-        .create(new Student("test_student_id0002" , "test_student_username_02"))
-        .then((res) => {
-        })
+    insertNewStudent() {
+      StudentService.create(
+        new Student("test_student_id0002", "test_student_username_02")
+      )
+        .then((res) => {})
         .catch((e) => {
           console.log(e);
         });
     },
-    filterList(){
-
+    filterList() {
+      this.studentList[0].courseList.forEach((item) => {
+        if (item.checkInTime == undefined) {
+          this.comingList.push(item);
+        } else {
+          this.studyingList.push(item);
+        }
+      });
     },
-    checkout(){
-
-    }
+     checkIn(courseId) {
+      let studentId = this.studentList[0].studentId;
+      this.studentList[0].courseList.forEach(item => {
+        if(item.courseId == courseId){
+          item.checkInTime = moment(new Date()).format("DD/MM/YYYY HH:mm");
+        }
+      })
+      checkInService.mockUpdateCheckInTime(studentId , this.studentList[0].courseList);
+    },
+    checkout() {
+      this.studentId = studentId;
+      checkInService.mockUpdateCheckInTime(this.studentId, this.trackingObject);
+    },
+    formatDate(dateValue) {
+      return moment(String(dateValue)).format("DD/MM/YYYY HH:mm");
+    },
   },
 };
 </script>
