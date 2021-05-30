@@ -8,7 +8,7 @@ export default class Course {
     teachBy = "";
     price = 0;
     location = "";
-    time = moment(new Date()).format("DD/MM/YYYY hh=mm");
+    time = "";
     courseType = "onsite";
     paymentStatus = "waiting payment";
     studentList = [];
