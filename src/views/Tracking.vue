@@ -10,7 +10,7 @@
           <div class="card-body">
             <h5 class="card-title">Course A</h5>
             <p class="card-text">Tutor Prakit</p>
-            <a href="#" class="btn btn-danger">Leave</a>
+            <a @click="checkout" class="btn btn-danger">Leave</a>
           </div>
         </div>
       </div>
@@ -21,7 +21,7 @@
       <span class="badge bg-primary rounded-pill"></span>
     </h4>
     <div class="row gx-3 gy-3">
-      <div class="col-sm" v-for="item in studentList" :key="item.studentId">
+      <div class="col-sm" v-for="item in studentList.courseList" :key="item.studentId">
         <div class="card">
           <div class="card-body">
             <h5 class="card-title">{{ item.courseName }}</h5>
@@ -39,6 +39,7 @@
 import studentService from "../services/StudentService";
 import checkInService from "../services/CheckInService";
 import Student from "../model/Student";
+import StudentService from '../services/StudentService';
 export default {
   name: "Tracking",
   components: {},
@@ -49,6 +50,9 @@ export default {
     return {
       studentObject: new Student(),
       studentList: [],
+      studyingList : [],
+      comingList : [],
+      studentUsername : "test_student_username_02"
     };
   },
   methods: {
@@ -76,12 +80,30 @@ export default {
 
     getAllStudent() {
       studentService.getAll().on("value", this.onDataChange);
+      this.getCourseList();
     },
-
+    getCourseList(){
+      this.studentList = this.studentList.filter(item => item.studentUsername == this.studentUsername);
+    },
     checkIn(studentId) {
       this.studentId = studentId;
       checkInService.mockUpdateCheckInTime(this.studentId, this.trackingObject);
     },
+    insertNewStudent(){
+      StudentService
+        .create(new Student("test_student_id0002" , "test_student_username_02"))
+        .then((res) => {
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    },
+    filterList(){
+
+    },
+    checkout(){
+
+    }
   },
 };
 </script>
