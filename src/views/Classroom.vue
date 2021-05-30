@@ -208,10 +208,10 @@ button.bi-plus-circle-fill {
   margin: 1px;
 }
 
-#app {
+/* #app {
   display: flex;
   justify-content: flex-end;
-}
+} */
 
 .coursePage{
   position: absolute;
