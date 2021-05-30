@@ -200,7 +200,7 @@
 
           <footer class="modal-footer">
             <button
-              v-if="!courseObject.courseId"
+              v-if="!courseObject.courseId && displayName == 'Tutor'"
               type="submit"
               id="saveBtn"
               class="btn btn-success"
@@ -211,7 +211,7 @@
             </button>
 
             <button
-              v-if="courseObject.courseId"
+              v-if="courseObject.courseId && displayName == 'Student' "
               type="submit"
               id="saveBtn"
               class="btn btn-success"
@@ -231,15 +231,23 @@
 import courseService from "../services/CourseService";
 import studentService from "../services/StudentService";
 import Student from "../model/Student";
+import {auth} from '../firebase'
+
 export default {
   name: "Modal",
   props: ["courseSelected"],
+  created() {
+    const user = auth.currentUser;
+    const { displayName } = user;
+    this.displayName = displayName;
+  },
   data() {
     return {
       courseObject: this.courseSelected,
       maxStudent: 5,
       msg: {},
       isValidateFail: true,
+      displayName: "",
     };
   },
   watch: {
@@ -274,14 +282,14 @@ export default {
       let list;
       this.courseObject.studentList.push(studentObject);
       courseService.update(this.courseObject.courseId, this.courseObject);
-      if(studentObject.courseList == undefined){
+      if (studentObject.courseList == undefined) {
         list = [];
-      }else{
+      } else {
         list = studentObject.courseList;
       }
-      console.log(list)
+      console.log(list);
       list.push(this.courseObject);
-      studentService.update(studentObject.studentId , 'courseList' , list);
+      studentService.update(studentObject.studentId, "courseList", list);
       this.$swal("Enroll Success");
       this.close();
     },
@@ -317,7 +325,7 @@ export default {
         }
       }
 
-      console.log(this.msg)
+      console.log(this.msg);
     },
     isEmpty(obj) {
       for (var key in obj) {
