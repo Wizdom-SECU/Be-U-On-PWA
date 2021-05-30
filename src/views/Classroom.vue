@@ -13,28 +13,8 @@
         @keyup="searchByTitle()"
       />
     </form>
-    <!-- <div>Category:</div>
-    <div class="nav-scroller py-1 mb-2">
-      <nav class="nav d-flex justify-content-between">
-        <span class="p-1 link-secondary rounded-pill bg-primary text-light"
-          >#All</span
-        >
-        <span class="p-1 link-secondary rounded-pill bg-primary text-light"
-          >#Physics</span
-        >
-        <span class="p-1 link-secondary rounded-pill bg-primary text-light"
-          >#Chemistry</span
-        >
-        <span class="p-1 link-secondary rounded-pill bg-primary text-light"
-          >#Biology</span
-        >
-        <span class="p-1 link-secondary rounded-pill bg-primary text-light"
-          >#Physical Education</span
-        >
-      </nav>
-    </div> -->
     <div id="app">
-      <button
+      <button v-if="displayName == 'Tutor'"
         id="createCourseBtn"
         class="bi bi-plus-circle-fill btn btn-outline-light"
         type="button"
@@ -55,7 +35,7 @@
       </Modal>
     </div>
     <div class="row gx-3 gy-3">
-      <div
+      <div style="margin-top : 20px"
         class="col-sm"
         v-for="(item, index) in courseList"
         :key="item.courseTitle"
@@ -120,6 +100,7 @@ import courseService from "../services/CourseService";
 import paymentService from "../services/PaymentService";
 import Modal from "../components/Modal.vue";
 import Course from "../model/Course"
+import {auth} from '../firebase'
 
 export default {
   name: "Classroom",
@@ -127,6 +108,9 @@ export default {
     Modal,
   },
   created() {
+    const user = auth.currentUser
+    const {displayName} = user
+    this.displayName = displayName;
     this.getAllCourse();
   },
   data() {
@@ -135,7 +119,8 @@ export default {
       courseList: [],
       isModalVisible: false,
       maxStudent: 5,
-      searchString : ""
+      searchString : "",
+      displayName: '',
     };
   },
   methods: {
