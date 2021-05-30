@@ -24,7 +24,7 @@ export default {
 </script>
 
 <style>
-.{
+. {
   display: flex;
   align-items: center;
 }

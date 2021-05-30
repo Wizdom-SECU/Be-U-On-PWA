@@ -11,8 +11,8 @@ class CourseService {
     return db.push(tutorial);
   }
 
-  update(key, value) {
-    return db.child(key).update(value);
+  update(key, field, value) {
+    return db.child(key).child(field).set(value);
   }
 
   delete(key) {
