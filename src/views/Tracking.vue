@@ -12,7 +12,7 @@
         <div class="card">
           <div class="card-body">
             <h5 class="card-title">{{ item.courseName }}</h5>
-            <p class="card-text">{{ item.time }}</p>
+            <p class="card-text">{{ formatDate(item.time) }}</p>
             <a class="btn btn-danger" @click="checkOut(item.courseId)"
               >Check Out</a
             >
@@ -20,9 +20,29 @@
         </div>
       </div>
     </div>
-    <hr v-if="studyingList.length > 0" />
-    <h4 class="d-flex justify-content-between align-items-center mb-3">
-      <span class="text-primary">Finished Course</span>
+    <hr v-if="comingList.length > 0" />
+    <h4 class="d-flex justify-content-between align-items-center mb-3" v-if="comingList.length > 0">
+      <span class="text-primary">Coming Course</span>
+      <span class="badge bg-primary rounded-pill"></span>
+    </h4>
+    <div class="row gx-3 gy-3">
+      <div class="col-sm" v-for="item in comingList" :key="item.courseId">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">{{ item.courseTitle }}</h5>
+            <p class="card-text">By : {{ item.teachBy }}</p>
+            <p class="card-text">{{ formatDate(item.time) }}</p>
+             <a class="btn btn-success" @click="checkIn(item.courseId)"
+              >Check In</a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr v-if="finishList.length > 0" />
+    <h4 class="d-flex justify-content-between align-items-center mb-3" v-if="finishList.length > 0">
+      <span class="text-primary">Completed Course</span>
       <span class="badge bg-primary rounded-pill"></span>
     </h4>
     <div class="row gx-3 gy-3">
@@ -31,7 +51,7 @@
           <div class="card-body">
             <h5 class="card-title">{{ item.courseTitle }}</h5>
             <p class="card-text">By : {{ item.teachBy }}</p>
-            <p class="card-text">{{formatDate(item.time)}}</p>
+            <p class="card-text">{{ formatDate(item.time) }}</p>
           </div>
         </div>
       </div>
@@ -43,7 +63,7 @@ import studentService from "../services/StudentService";
 import checkInService from "../services/CheckInService";
 import Student from "../model/Student";
 import StudentService from "../services/StudentService";
-import moment from "moment"
+import moment from "moment";
 
 export default {
   name: "Tracking",
@@ -58,6 +78,7 @@ export default {
       studentListTmp: [],
       studyingList: [],
       comingList: [],
+      finishList: [],
       studentUsername: "test_student_username_02",
     };
   },
@@ -82,7 +103,6 @@ export default {
       });
 
       this.studentListTmp = list;
-
       this.getCourseList();
     },
 
@@ -105,38 +125,47 @@ export default {
         });
     },
     filterList() {
-      this.comingList = [];
       this.studyingList = [];
+      this.comingList = [];
       this.finishList = [];
+
       this.studentList[0].courseList.forEach((item) => {
         if (item.checkInTime == undefined) {
           this.comingList.push(item);
-        }else if (item.checkOutTime != undefined) {
+          console.log(this.comingList);
+        } else if (item.checkOutTime) {
           this.finishList.push(item);
-        }
-         else {
+          console.log(this.finishList);
+        } else {
           this.studyingList.push(item);
+          console.log(this.studyingList);
         }
       });
     },
-     checkIn(courseId) {
+    checkIn(courseId) {
       let studentId = this.studentList[0].studentId;
-      this.studentList[0].courseList.forEach(item => {
-        if(item.courseId == courseId){
+      this.studentList[0].courseList.forEach((item) => {
+        if (item.courseId == courseId) {
           item.checkInTime = moment(new Date()).format("DD/MM/YYYY HH:mm");
         }
-      })
-      checkInService.mockUpdateTrackingTime(studentId , this.studentList[0].courseList);
+      });
+      checkInService.mockUpdateTrackingTime(
+        studentId,
+        this.studentList[0].courseList
+      );
       this.filterList();
     },
     checkOut(courseId) {
-     let studentId = this.studentList[0].studentId;
-      this.studentList[0].courseList.forEach(item => {
-        if(item.courseId == courseId){
+      let studentId = this.studentList[0].studentId;
+      this.studentList[0].courseList.forEach((item) => {
+        if (item.courseId == courseId) {
           item.checkOutTime = moment(new Date()).format("DD/MM/YYYY HH:mm");
         }
-      })
-      checkInService.mockUpdateTrackingTime(studentId , this.studentList[0].courseList);
+      });
+      checkInService.mockUpdateTrackingTime(
+        studentId,
+        this.studentList[0].courseList
+      );
       this.filterList();
     },
     formatDate(dateValue) {
