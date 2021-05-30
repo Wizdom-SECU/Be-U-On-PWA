@@ -30,7 +30,6 @@ export default {
 <style>
 .console {
   width: 100%;
-  height: 100%;
   padding-bottom: 62px;
 }
 .nav-scroller {

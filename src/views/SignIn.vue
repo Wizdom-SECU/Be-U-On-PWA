@@ -1,6 +1,6 @@
 <template>
-  <main class="form-signin text-center">
-    <form>
+  <main style="height: 100%; display: flex; align-items: center;">
+    <form class="form-signin text-center">
       <img class="mb-4" src="../assets/bootstrap-logo.svg" alt="" width="72" height="57">
       <h3 class="h3 mb-3">Please Sign In</h3>
       <div class="form-floating">
@@ -24,6 +24,10 @@ export default {
 </script>
 
 <style>
+. {
+  display: flex;
+  align-items: center;
+}
 .form-signin {
   width: 100%;
   max-width: 330px;
