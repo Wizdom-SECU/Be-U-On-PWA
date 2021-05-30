@@ -1,7 +1,7 @@
 <template>
   <main style="height: 100%; display: flex; align-items: center;">
     <form class="form-signin text-center" @submit.prevent="onSubmit()">
-      <img class="mb-4" src="../assets/bootstrap-logo.svg" alt="" width="72" height="57">
+      <img class="mb-4" src="../assets/buon_LOGO.png" alt="" width="120">
       <h3 class="h3 mb-3">Please Sign In</h3>
       <div class="form-floating">
         <input
@@ -55,6 +55,8 @@ export default {
             this.disabled = false
             console.debug(credential)
             this.$router.replace({ name: 'OTP' })
+          }).catch(err => {
+            this.disabled = false
           })
         } else {
           this.disabled = false

@@ -45,16 +45,12 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
     let user = auth.currentUser
     if (user) {
-        const {displayName, email, emailVerified, getIdTokenResult} = user
-        console.debug(user)
-        console.log(displayName, email, emailVerified )
         if (to.name === 'SignIn') next({ name: 'Home' })
-        else {
-            next()
-        }
+        else next()
     } else {
         console.debug('invalid user')
+        if (to.name === 'SignIn') next()
+        else next({ name: 'SignIn' })
     }
-    next()
 })
 export default router

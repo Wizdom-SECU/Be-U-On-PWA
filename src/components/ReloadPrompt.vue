@@ -1,9 +1,6 @@
 
 <template>
-  <div class="modal" tabindex="-1"
-    v-if="offlineReady || needRefresh"
-    role="alert"
-  >
+  <div class="modal" tabindex="-1" v-if="offlineReady || needRefresh" role="alert">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -19,7 +16,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { useRegisterSW } from 'virtual:pwa-register/vue'
 
 const {

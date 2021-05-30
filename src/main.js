@@ -12,14 +12,20 @@ auth.onAuthStateChanged(user => {
   console.debug('Firebase is ready!')
   if (user) {
     // valid user
-    // router.push({ name: 'Home' })
+    if (app) {
+      // alredy login
+    } else {
+      console.debug('user already open app')
+      // router.replace({ name: 'Home' })
+    }
   } else {
     console.debug('not login or alredy logout')
-    // router.push({ name: 'SignIn' })
     if (app) {
       // already logout
     } else {
-      // anonymous
+      // already open app
+      console.debug('anonymous already open app')
+      // router.replace({ name: 'SignIn' })
     }
   }
   // initialize vue firebase after firebase
