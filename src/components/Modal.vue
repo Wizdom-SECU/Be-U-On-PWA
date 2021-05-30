@@ -26,8 +26,8 @@
                   class="card-text"
                   style="
                     color: darkgreen;
-                    font-size : 24px;
-                    font-wieght : bolder;
+                    font-size: 24px;
+                    font-wieght: bolder;
                     text-align: center;
                     font-family: Sarabun, sans-serif;
                   "
@@ -41,7 +41,9 @@
           <section class="modal-body" id="modalDescription">
             <form class="row gy-2 gx-3 align-items-center">
               <div class="col-12">
-                <label for="courseTitle" class="form-label header">Course Title</label>
+                <label for="courseTitle" class="form-label header"
+                  >Course Title</label
+                >
                 <input
                   :readonly="isEnrollCourse()"
                   type="text"
@@ -49,6 +51,9 @@
                   aria-label="courseTitle"
                   v-model="courseObject.courseTitle"
                 />
+                <span class="error" v-if="msg.courseTitle">{{
+                  msg.courseTitle
+                }}</span>
               </div>
               <div class="col-12">
                 <label for="courseDesc" class="form-label header"
@@ -71,6 +76,7 @@
                   aria-label="teachBy"
                   v-model="courseObject.teachBy"
                 />
+                <span class="error" v-if="msg.teachBy">{{ msg.teachBy }}</span>
               </div>
               <div class="col-auto">
                 <label for="time" class="form-label header">Time</label>
@@ -80,6 +86,7 @@
                   class="form-control"
                   v-model="courseObject.time"
                 />
+                <span class="error" v-if="msg.time">{{ msg.time }}</span>
               </div>
               <div class="col-auto">
                 <label for="price" class="form-label header">Price/hour</label>
@@ -89,6 +96,7 @@
                   class="form-control"
                   v-model="courseObject.price"
                 />
+                <span class="error" v-if="msg.price">{{ msg.price }}</span>
               </div>
               <div class="col-auto">
                 <label for="price" class="form-label header">Hours</label>
@@ -98,6 +106,7 @@
                   class="form-control"
                   v-model="courseObject.hours"
                 />
+                <span class="error" v-if="msg.hours">{{ msg.hours }}</span>
               </div>
               <div class="col-12">
                 <input
@@ -133,7 +142,9 @@
                   Online
                 </label>
                 <div class="col-12" v-if="courseObject.courseType == 'onsite'">
-                  <label for="location" class="form-label header">Location</label>
+                  <label for="location" class="form-label header"
+                    >Location</label
+                  >
                   <input
                     :readonly="isEnrollCourse()"
                     type="text"
@@ -141,9 +152,14 @@
                     aria-label="location"
                     v-model="courseObject.location"
                   />
+                  <span class="error" v-if="msg.location">{{
+                    msg.location
+                  }}</span>
                 </div>
                 <div class="col-12" v-if="courseObject.courseType == 'online'">
-                  <label for="zoomlink" class="form-label header">Link to Zoom</label>
+                  <label for="zoomlink" class="form-label header"
+                    >Link to Zoom</label
+                  >
                   <input
                     :readonly="isEnrollCourse()"
                     type="text"
@@ -151,9 +167,16 @@
                     aria-label="zoomlink"
                     v-model="courseObject.zoomLink"
                   />
+                  <span class="error" v-if="msg.zoomLink">{{
+                    msg.zoomLink
+                  }}</span>
                 </div>
 
-                <div class="col-12 header" v-if="courseObject.courseId != ''" style="margin-top : 10px">
+                <div
+                  class="col-12 header"
+                  v-if="courseObject.courseId != ''"
+                  style="margin-top: 10px"
+                >
                   <label for="studentName" class="form-label"
                     >Student in course</label
                   >
@@ -161,7 +184,8 @@
                     v-for="item in courseObject.studentList"
                     :key="item.studentId"
                   >
-                    <input style="margin-top : 10px"
+                    <input
+                      style="margin-top: 10px"
                       :readonly="isEnrollCourse()"
                       type="text"
                       class="form-control"
@@ -213,6 +237,8 @@ export default {
     return {
       courseObject: this.courseSelected,
       maxStudent: 5,
+      msg: {},
+      isValidateFail: true,
     };
   },
   watch: {
@@ -225,7 +251,12 @@ export default {
       this.courseObject.totalPrice =
         this.courseObject.price * this.courseObject.hours;
       this.courseObject.cost = 0.1 * this.courseObject.totalPrice;
-      this.$emit("createCourseDetail", this.courseObject);
+      this.validate();
+      if (!this.isEmpty(this.msg)) {
+        this.$swal("Please fil in for required data.");
+      } else {
+        this.$emit("createCourseDetail", this.courseObject);
+      }
     },
     close() {
       this.$emit("close");
@@ -241,6 +272,46 @@ export default {
       this.courseObject.studentList.push(new Student("testID", "testUsername"));
       courseService.update(this.courseObject.courseId, this.courseObject);
       this.close();
+    },
+    validate() {
+      this.msg = {};
+      if (!this.courseObject.courseTitle) {
+        this.msg.courseTitle = "Course Title is required.";
+      }
+
+      if (!this.courseObject.teachBy) {
+        this.msg.teachBy = "Teach By is required.";
+      }
+
+      if (!this.courseObject.time) {
+        this.msg.time = "Time is required.";
+      }
+
+      if (!this.courseObject.price) {
+        this.msg.price = "Price is required.";
+      }
+
+      if (!this.courseObject.hours) {
+        this.msg.hours = "Hours is required.";
+      }
+
+      if (this.courseObject.courseType == "onsite") {
+        if (!this.courseObject.location) {
+          this.msg.location = "Location is required.";
+        }
+      } else {
+        if (!this.courseObject.zoomLink) {
+          this.msg.zoomLink = "Zoom Link is required.";
+        }
+      }
+
+      console.log(this.msg)
+    },
+    isEmpty(obj) {
+      for (var key in obj) {
+        if (obj.hasOwnProperty(key)) return false;
+      }
+      return true;
     },
   },
 };
@@ -357,9 +428,14 @@ input {
   width: 300px;
 }
 
-.header{
+.header {
   font-weight: bolder;
   font-size: 20px;
-  color : darkgreen;
+  color: darkgreen;
+}
+
+.error {
+  font-weight: bolder;
+  color: red;
 }
 </style>
