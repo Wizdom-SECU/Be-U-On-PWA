@@ -13,7 +13,7 @@
           <div class="card-body">
             <h5 class="card-title">{{ item.courseName }}</h5>
             <p class="card-text">{{ item.time }}</p>
-            <a class="btn btn-primary" @click="checkOut(item.studentId)"
+            <a class="btn btn-danger" @click="checkOut(item.courseId)"
               >Check Out</a
             >
           </div>
@@ -22,19 +22,16 @@
     </div>
     <hr v-if="studyingList.length > 0" />
     <h4 class="d-flex justify-content-between align-items-center mb-3">
-      <span class="text-primary">Up coming</span>
+      <span class="text-primary">Finished Course</span>
       <span class="badge bg-primary rounded-pill"></span>
     </h4>
     <div class="row gx-3 gy-3">
-      <div class="col-sm" v-for="item in comingList" :key="item.courseId">
+      <div class="col-sm" v-for="item in finishList" :key="item.courseId">
         <div class="card">
           <div class="card-body">
             <h5 class="card-title">{{ item.courseTitle }}</h5>
             <p class="card-text">By : {{ item.teachBy }}</p>
             <p class="card-text">{{formatDate(item.time)}}</p>
-            <a class="btn btn-primary" @click="checkIn(item.courseId)"
-              >Check In</a
-            >
           </div>
         </div>
       </div>
@@ -108,10 +105,16 @@ export default {
         });
     },
     filterList() {
+      this.comingList = [];
+      this.studyingList = [];
+      this.finishList = [];
       this.studentList[0].courseList.forEach((item) => {
         if (item.checkInTime == undefined) {
           this.comingList.push(item);
-        } else {
+        }else if (item.checkOutTime != undefined) {
+          this.finishList.push(item);
+        }
+         else {
           this.studyingList.push(item);
         }
       });
@@ -123,11 +126,18 @@ export default {
           item.checkInTime = moment(new Date()).format("DD/MM/YYYY HH:mm");
         }
       })
-      checkInService.mockUpdateCheckInTime(studentId , this.studentList[0].courseList);
+      checkInService.mockUpdateTrackingTime(studentId , this.studentList[0].courseList);
+      this.filterList();
     },
-    checkout() {
-      this.studentId = studentId;
-      checkInService.mockUpdateCheckInTime(this.studentId, this.trackingObject);
+    checkOut(courseId) {
+     let studentId = this.studentList[0].studentId;
+      this.studentList[0].courseList.forEach(item => {
+        if(item.courseId == courseId){
+          item.checkOutTime = moment(new Date()).format("DD/MM/YYYY HH:mm");
+        }
+      })
+      checkInService.mockUpdateTrackingTime(studentId , this.studentList[0].courseList);
+      this.filterList();
     },
     formatDate(dateValue) {
       return moment(String(dateValue)).format("DD/MM/YYYY HH:mm");
